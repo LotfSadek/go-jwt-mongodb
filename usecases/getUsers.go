@@ -14,7 +14,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-func (c *_us) GetUsers(allusers []primitive.M) (primitive.M, error) {
+func (c *_us) GetUsers() ([]primitive.M, error) {
 
 	var ctx, cancel = context.WithTimeout(context.Background(), 100*time.Second)
 	ginCon := gin.Context{}
@@ -46,9 +46,9 @@ func (c *_us) GetUsers(allusers []primitive.M) (primitive.M, error) {
 	if err != nil {
 		return nil, errors.New("error occured while listing user items")
 	}
-	//var allusers []bson.M
+	var allusers []bson.M
 	if err = result.All(ctx, &allusers); err != nil {
 		log.Fatal(err)
 	}
-	return allusers[0], nil
+	return allusers, nil
 }

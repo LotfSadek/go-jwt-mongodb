@@ -3,7 +3,6 @@ package usecases
 import (
 	"golang-jwt/models"
 
-	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
@@ -11,8 +10,8 @@ import (
 type Base interface {
 	SignUp(user *models.User) (*mongo.InsertOneResult, error)
 	Login(user *models.User) (*models.User, error)
-	GetUsers(allusers []primitive.M) (primitive.M, error)
-	GetUser() gin.HandlerFunc
+	GetUsers() ([]primitive.M, error)
+	GetUser(user_id string) (models.User, error)
 }
 type _us struct {
 }

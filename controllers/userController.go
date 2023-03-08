@@ -7,7 +7,6 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 // put all functions in interface?
@@ -20,15 +19,10 @@ type _userHandler struct {
 
 func (c *_userHandler) GetUsers() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		var allusers []primitive.M
 		if err := helper.CheckUserType(ctx, "ADMIN"); err != nil {
 			return
 		}
-		if err := ctx.BindJSON(&allusers); err != nil {
-			ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-			return
-		}
-		result, err := c.uc.GetUsers(allusers)
+		result, err := c.uc.GetUsers()
 		if err != nil {
 			ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
@@ -37,7 +31,21 @@ func (c *_userHandler) GetUsers() gin.HandlerFunc {
 	}
 }
 func (c *_userHandler) GetUser() gin.HandlerFunc {
-	return c.uc.GetUser()
+	return func(ctx *gin.Context) {
+		if err := helper.CheckUserType(ctx, "ADMIN"); err != nil {
+			return
+		}
+		userId := ctx.Param("user_id")
+		if err := helper.MatchUserTypeToUid(ctx, userId); err != nil {
+			return
+		}
+		result, err := c.uc.GetUser(userId)
+		if err != nil {
+			ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+		ctx.JSON(http.StatusOK, gin.H{"result": result})
+	}
 }
 func (c *_userHandler) SetupRoutes(rg *gin.RouterGroup) {
 	rg.Use(middleware.Authenticate())
