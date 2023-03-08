@@ -2,6 +2,7 @@ package main
 
 import (
 	"golang-jwt/controllers"
+	"golang-jwt/repository"
 	"golang-jwt/router"
 	"golang-jwt/usecases"
 	"log"
@@ -19,7 +20,9 @@ func main() {
 	if port == "" {
 		port = "8000"
 	}
-	uc := usecases.NewBaseRepo()
+	ar := repository.NewAuthRepo()
+	ur := repository.NewUserRepo()
+	uc := usecases.NewBaseRepo(ar, ur)
 	ah := controllers.NewAuthHandler(uc)
 	uh := controllers.NewUserHandler(uc)
 	router.StartGinRouter(port, ah, uh)

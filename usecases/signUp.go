@@ -41,8 +41,8 @@ func (c *_us) SignUp(user *models.User) (*mongo.InsertOneResult, error) {
 	token, refreshToken, _ := helper.GenerateAllTokens(*user.Email, *user.First_name, *user.Last_name, *user.User_type, *&user.User_id)
 	user.Token = &token
 	user.Refresh_token = &refreshToken
-
-	resultInsertionNumber, insertErr := database.UserCollection.InsertOne(ctx, user)
+	// to be delegated to the repo layer
+	resultInsertionNumber, insertErr := c.ar.Create(ctx, *user)
 	if insertErr != nil {
 		return nil, insertErr
 	}
